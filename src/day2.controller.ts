@@ -38,4 +38,32 @@ export class Day2Controller {
         }
         return list;
     }
+
+    @Get('invalid-ids-part2')
+    async sumInvalidIdsPart2(): Promise<number> {
+        const filePath = path.join(process.cwd(), 'dist', 'assets', 'day2_input.txt');
+        const rangeIdsString = await fs.promises.readFile(filePath, 'utf8');
+        let sumInvalidIds: number = 0;
+        const rangeIds: string[] = rangeIdsString.split(',');
+        for(let range of rangeIds) {
+            const [minRange, maxRange] = range.split('-').map(Number);
+            const invalidInRange = this.listInvalidIdsBetweenPartTwo(minRange, maxRange);
+            sumInvalidIds = invalidInRange.filter(item => item !== null).reduce((sumInvalidIds, currentValue) => sumInvalidIds + currentValue, sumInvalidIds);
+            console.log(`Range ${minRange}-${maxRange}; Invalid IDs are:${invalidInRange.join(',')}; sum is:${sumInvalidIds}`)
+        }
+        return sumInvalidIds;
+    }
+
+    listInvalidIdsBetweenPartTwo(minRange: number, maxRange: number): (number|null)[] {
+        let list: number[] = [];
+        for (let i = minRange; i <= maxRange; i++) {
+            console.log(i);
+            const regex = /^(\d+)(?:\1)+$/;
+            const match = i.toString().match(regex);
+            if((match) && match[0]) {
+                list.push(Number.parseInt(match[0]));
+            }
+        }
+        return list;
+    }
 }
